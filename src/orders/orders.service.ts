@@ -36,7 +36,27 @@ export class OrdersService {
       throw new NotAcceptableException("Order is in Pending state. Cannot update order status to Deliver")
     }
 
-    return this.dbService.order.update({ where: { id: orderId }, data: { status: updateStatusTo } })
+    if (updateStatusTo === OrderStatus.SHIPPED)
+      return (
+        this.dbService.order
+          .update({
+            where: { id: orderId },
+            data: { status: updateStatusTo, shippedOn: new Date(Date.now()) }
+          })
+      )
+
+
+
+    if (updateStatusTo === OrderStatus.DELIVERED)
+      return (
+        this.dbService.order
+          .update({
+            where: { id: orderId },
+            data: { status: updateStatusTo, deliveredOn: new Date(Date.now()) }
+          })
+      )
+
+
   }
 
   async placeOrder(userId: string, createOrderDto: CreateOrderDto) {
@@ -68,14 +88,10 @@ export class OrdersService {
   }
 
   async findOrderHistoryByUserId(userId: string) {
-    let order = await this.dbService.orderHistory.findMany({
+    let order = await this.dbService.order.findMany({
       where: { userId, },
       include: {
-        orderData: {
-          include: {
-            bookData: true
-          }
-        },
+        bookData: true,
         userData: true
       }
     });

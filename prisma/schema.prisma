@@ -16,8 +16,7 @@ model User {
   createAt  DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 
-  Order        Order[]
-  OrderHistory OrderHistory[]
+  Order Order[]
 }
 
 enum Role {
@@ -40,35 +39,21 @@ model Book {
 }
 
 model Order {
-  id        String      @id @default(auto()) @map("_id") @db.ObjectId
-  status    OrderStatus @default(value: PENDING)
-  bookIds   String[]    @db.ObjectId
-  userId    String      @db.ObjectId
-  createAt  DateTime?   @default(now())
-  updatedAt DateTime?   @updatedAt
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  status      OrderStatus @default(value: PENDING)
+  bookIds     String[]    @db.ObjectId
+  userId      String      @db.ObjectId
+  shippedOn   DateTime?
+  deliveredOn DateTime?
+  createAt    DateTime?   @default(now())
+  updatedAt   DateTime?   @updatedAt
 
-  userData     User           @relation(fields: [userId], references: [id])
-  bookData     Book[]         @relation(fields: [bookIds], references: [id])
-  OrderHistory OrderHistory[]
+  userData User   @relation(fields: [userId], references: [id])
+  bookData Book[] @relation(fields: [bookIds], references: [id])
 }
 
 enum OrderStatus {
   PENDING
   SHIPPED
   DELIVERED
-}
-
-model OrderHistory {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  orderId     String    @db.ObjectId
-  userId      String    @db.ObjectId
-  shippedOn   DateTime
-  deliveredOn DateTime
-  createAt    DateTime? @default(now())
-  updatedAt   DateTime? @updatedAt
-
-  userData  User  @relation(fields: [userId], references: [id])
-  orderData Order @relation(fields: [orderId], references: [id])
-
-  @@unique([orderId, userId])
 }
