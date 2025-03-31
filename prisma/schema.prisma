@@ -8,12 +8,16 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  email    String  @unique
-  name     String
-  password String
-  roles    Role[]  @default(value: [USER])
-  Order    Order[]
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  email     String    @unique
+  name      String
+  password  String
+  roles     Role[]    @default(value: [USER])
+  createAt  DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  Order        Order[]
+  OrderHistory OrderHistory[]
 }
 
 enum Role {
@@ -22,29 +26,49 @@ enum Role {
 }
 
 model Book {
-  id     String   @id @default(auto()) @map("_id") @db.ObjectId
-  title  String
-  author String
-  genre  String[]
-  price  Int
-  stock  Int
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  author    String
+  genre     String[]
+  price     Int
+  stock     Int
+  createAt  DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 
   orderIds String[] @db.ObjectId
   orders   Order[]  @relation(fields: [orderIds], references: [id])
 }
 
 model Order {
-  id      String      @id @default(auto()) @map("_id") @db.ObjectId
-  status  OrderStatus @default(value: PENDING)
-  bookIds String[]    @db.ObjectId
-  userId  String      @db.ObjectId
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  status    OrderStatus @default(value: PENDING)
+  bookIds   String[]    @db.ObjectId
+  userId    String      @db.ObjectId
+  createAt  DateTime?   @default(now())
+  updatedAt DateTime?   @updatedAt
 
-  userData User   @relation(fields: [userId], references: [id])
-  bookData Book[] @relation(fields: [bookIds], references: [id])
+  userData     User           @relation(fields: [userId], references: [id])
+  bookData     Book[]         @relation(fields: [bookIds], references: [id])
+  OrderHistory OrderHistory[]
 }
 
 enum OrderStatus {
   PENDING
   SHIPPED
   DELIVERED
+}
+
+model OrderHistory {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  orderId     String    @db.ObjectId
+  userId      String    @db.ObjectId
+  shippedOn   DateTime
+  deliveredOn DateTime
+  createAt    DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
+
+  userData  User  @relation(fields: [userId], references: [id])
+  orderData Order @relation(fields: [orderId], references: [id])
+
+  @@unique([orderId, userId])
 }

@@ -38,4 +38,20 @@ export class OrdersService {
 
     return this.dbService.order.update({ where: { id: orderId }, data: { status: updateStatusTo } })
   }
+
+  async findOrderHistoryByUserId(userId: string) {
+    let order = await this.dbService.orderHistory.findMany({
+      where: { userId, },
+      include: {
+        orderData: {
+          include: {
+            bookData: true
+          }
+        },
+        userData: true
+      }
+    });
+
+    return order;
+  }
 }

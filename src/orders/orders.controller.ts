@@ -25,12 +25,14 @@ export class OrdersController {
     return this.ordersService.updateOrderStatus(orderId, updateStatusTo)
   }
 
-  @Auth(Role.ADMIN, Role.USER)
+  @Auth(Role.USER)
   @Post()
   placeOrder() { }
 
-  @Auth(Role.ADMIN, Role.USER)
+  @Auth(Role.USER)
   @Get("/history")
-  orderHistory() { }
+  orderHistory(@Request() request) {
+    return this.ordersService.findOrderHistoryByUserId(request.user.id);
+  }
 
 }
