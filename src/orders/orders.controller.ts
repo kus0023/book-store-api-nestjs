@@ -27,7 +27,10 @@ export class OrdersController {
 
   @Auth(Role.USER)
   @Post()
-  placeOrder() { }
+  placeOrder(@Request() request, @Body() createOrderDto: CreateOrderDto) {
+    const userId = request.user.id;
+    return this.ordersService.placeOrder(userId, createOrderDto);
+  }
 
   @Auth(Role.USER)
   @Get("/history")
