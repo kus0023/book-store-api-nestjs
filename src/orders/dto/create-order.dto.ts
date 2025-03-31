@@ -1,1 +1,23 @@
-export class CreateOrderDto {}
+import { OrderStatus } from "@prisma/client";
+import { ArrayMinSize, ArrayUnique, IsArray, IsEnum, IsNotEmpty, IsOptional, IsString, } from "class-validator";
+
+export class CreateOrderDto {
+
+    @IsOptional()
+    id?: string;
+
+    @IsEnum(OrderStatus)
+    @IsOptional()
+    status?: OrderStatus;
+
+    @IsArray()
+    @IsString({ each: true })
+    @IsNotEmpty({ each: true })
+    @ArrayMinSize(1)
+    @ArrayUnique()
+    bookIds: string[];
+
+    @IsOptional()
+    @IsString()
+    userId: string;
+}

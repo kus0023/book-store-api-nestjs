@@ -8,12 +8,15 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  email    String  @unique
-  name     String
-  password String
-  roles    Role[]  @default(value: [USER])
-  Order    Order[]
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  email     String    @unique
+  name      String
+  password  String
+  roles     Role[]    @default(value: [USER])
+  createAt  DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  Order Order[]
 }
 
 enum Role {
@@ -22,24 +25,31 @@ enum Role {
 }
 
 model Book {
-  id     String   @id @default(auto()) @map("_id") @db.ObjectId
-  title  String
-  author String
-  genre  String[]
-  price  Int
-  stock  Int
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  author    String
+  genre     String[]
+  price     Int
+  stock     Int
+  createAt  DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 
-  Order Order[]
+  orderIds String[] @db.ObjectId
+  orders   Order[]  @relation(fields: [orderIds], references: [id])
 }
 
 model Order {
-  id     String      @id @default(auto()) @map("_id") @db.ObjectId
-  status OrderStatus @default(value: PENDING)
-  books  String[]    @db.ObjectId
-  userId String      @db.ObjectId
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  status      OrderStatus @default(value: PENDING)
+  bookIds     String[]    @db.ObjectId
+  userId      String      @db.ObjectId
+  shippedOn   DateTime?
+  deliveredOn DateTime?
+  createAt    DateTime?   @default(now())
+  updatedAt   DateTime?   @updatedAt
 
-  book Book @relation(fields: [books], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  userData User   @relation(fields: [userId], references: [id])
+  bookData Book[] @relation(fields: [bookIds], references: [id])
 }
 
 enum OrderStatus {
