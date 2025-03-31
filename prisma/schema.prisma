@@ -29,17 +29,18 @@ model Book {
   price  Int
   stock  Int
 
-  Order Order[]
+  orderIds String[] @db.ObjectId
+  orders   Order[]  @relation(fields: [orderIds], references: [id])
 }
 
 model Order {
-  id     String      @id @default(auto()) @map("_id") @db.ObjectId
-  status OrderStatus @default(value: PENDING)
-  books  String[]    @db.ObjectId
-  userId String      @db.ObjectId
+  id      String      @id @default(auto()) @map("_id") @db.ObjectId
+  status  OrderStatus @default(value: PENDING)
+  bookIds String[]    @db.ObjectId
+  userId  String      @db.ObjectId
 
-  book Book @relation(fields: [books], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  userData User   @relation(fields: [userId], references: [id])
+  bookData Book[] @relation(fields: [bookIds], references: [id])
 }
 
 enum OrderStatus {

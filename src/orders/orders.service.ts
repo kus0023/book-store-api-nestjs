@@ -1,26 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { OrderStatus, Prisma } from '@prisma/client';
+import { DatabaseService } from 'src/database/database.service';
 import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Injectable()
 export class OrdersService {
-  create(createOrderDto: CreateOrderDto) {
-    return 'This action adds a new order';
-  }
 
-  findAll() {
-    return `This action returns all orders`;
-  }
+  constructor(private readonly dbService: DatabaseService) { }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
-  }
+  getAllOrders(status?: OrderStatus) {
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
-  }
+    return this.dbService.order.findMany({ where: { status: status } })
 
-  remove(id: number) {
-    return `This action removes a #${id} order`;
   }
 }
