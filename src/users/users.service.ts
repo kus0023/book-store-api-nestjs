@@ -33,4 +33,8 @@ export class UsersService {
   async remove(id: string) {
     return this.dbService.user.delete({ where: { id, } });
   }
+
+  async findByEmail(email: string) {
+    return this.dbService.user.findUnique({ where: { email, } })
+  }
 }
