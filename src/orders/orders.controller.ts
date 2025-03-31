@@ -17,9 +17,12 @@ export class OrdersController {
   }
 
   @Auth(Role.ADMIN)
-  @Patch()
-  updateOrderStatus() {
-
+  @Patch(":orderId")
+  updateOrderStatus(
+    @Param("orderId") orderId: string,
+    @Body('updateStatusTo', OrderStatusValidationPipe) updateStatusTo: OrderStatus
+  ) {
+    return this.ordersService.updateOrderStatus(orderId, updateStatusTo)
   }
 
   @Auth(Role.ADMIN, Role.USER)
