@@ -21,6 +21,6 @@ export class RolesGuard implements CanActivate {
 
         if (!user) throw new UnauthorizedException("Role guard failed to retrieve user");
 
-        return requiredRoles.some((role) => user.sub.roles?.includes(role));
+        return requiredRoles.some((role) => user.roles?.includes(role));
     }
 }
