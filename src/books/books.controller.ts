@@ -2,8 +2,11 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, Q
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-boook.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from '@prisma/client';
 
 @Controller('books')
+@Auth(Role.ADMIN)
 export class BooksController {
 
   constructor(private readonly booksService: BooksService) { }
@@ -14,6 +17,7 @@ export class BooksController {
   }
 
   @Get()
+  @Auth(Role.USER)
   findAll(
     @Query('skip', new DefaultValuePipe(0)) skip: number,
     @Query('take', new DefaultValuePipe(10)) take: number,
