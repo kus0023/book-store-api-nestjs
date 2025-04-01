@@ -5,7 +5,7 @@ import { DatabaseService } from 'src/database/database.service';
 import { BookSearchAndFilterController } from './book-search.controller';
 
 @Module({
-  controllers: [BooksController, BookSearchAndFilterController],
+  controllers: [BookSearchAndFilterController, BooksController],
   providers: [BooksService, DatabaseService],
   exports: [BooksService]
 })
