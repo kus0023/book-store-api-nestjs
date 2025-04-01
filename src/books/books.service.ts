@@ -35,7 +35,7 @@ export class BooksService {
   }
 
   remove(id: string) {
-    return `This action removes a #${id} book`;
+    return this.dbService.book.delete({ where: { id, } });
   }
 
   search(skip: number, take: number, title?: string, author?: string, categories?: string[], minPrice?: number, maxPrice?: number) {
