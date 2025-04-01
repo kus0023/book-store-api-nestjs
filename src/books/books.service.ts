@@ -37,4 +37,47 @@ export class BooksService {
   remove(id: string) {
     return `This action removes a #${id} book`;
   }
+
+  search(skip: number, take: number, title?: string, author?: string, categories?: string[], minPrice?: number, maxPrice?: number) {
+
+
+    let query: any = []
+
+    if (title) {
+      query.push({ title: { contains: title, mode: 'insensitive' } },)
+    }
+    if (author) {
+      query.push({ author: { contains: author } })
+    }
+    if (categories && categories.length !== 0) {
+
+      query.push({ genre: { hasSome: categories } });
+    }
+
+    return (
+      this.dbService
+        .book
+        .findMany({
+          skip,
+          take,
+          where: {
+            AND: [
+              // ...query,
+
+              {
+                price: {
+                  gte: minPrice || 0,
+                  lte: maxPrice || 1000000
+                }
+              }
+            ]
+          },
+          omit: {
+            orderIds: true,
+            createAt: true,
+            updatedAt: true
+          }
+        })
+    )
+  }
 }
