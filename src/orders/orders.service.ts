@@ -60,29 +60,49 @@ export class OrdersService {
   }
 
   async placeOrder(userId: string, createOrderDto: CreateOrderDto) {
+    // Check if provided Book id is valid And is in Stock
+    const bookExists = await this.dbService
+      .book.findFirst({ where: { id: createOrderDto.bookId } });
+    if (!bookExists) throw new BadRequestException("Provided book id to update is not valid")
+    if (bookExists.stock === 0) {
+      throw new NotAcceptableException("Book is out of stock")
+    }
     // check if PENDING order already exist for current user
     const pendingOrderExists = await this.dbService
       .order.findFirst({ where: { userId, status: OrderStatus.PENDING } });
 
     if (pendingOrderExists) {
-      // Then update books Id only if its not present in it
-      const uniqueBookIds = this.getUniqueBookId([
-        ...pendingOrderExists.bookIds,
-        ...createOrderDto.bookIds
+      // Check if bookId to add is already present in existing order
+
+      if (pendingOrderExists.bookIds.find((id) => createOrderDto.bookId === id)) {
+        throw new NotAcceptableException({
+          orderId: pendingOrderExists.id,
+          description: "BookId already present in the Pending order"
+        })
+      }
+
+      // If not present then update bookId in order and update stock of bookId 
+      const { order, book } = this.dbService;
+
+      return this.dbService.$transaction([
+        order
+          .update({
+            where: { id: pendingOrderExists.id },
+            data: { bookIds: { push: createOrderDto.bookId } }
+          }),
+        book
+          .update({ where: { id: createOrderDto.bookId }, data: { stock: { decrement: 1 } } })
       ])
 
-      return this.dbService
-        .order
-        .update({ where: { id: pendingOrderExists.id }, data: { bookIds: uniqueBookIds } })
-
     } else {
-      // Create a new order
-      return this.dbService.order.create({
-        data: {
-          userId: userId,
-          bookIds: this.getUniqueBookId(createOrderDto.bookIds)
-        }
-      })
+      // Create a new order and update book stock
+      const { order, book } = this.dbService;
+      return this.dbService.$transaction([
+        order
+          .create({ data: { userId: userId, bookIds: { set: [createOrderDto.bookId] } } }),
+        book
+          .update({ where: { id: createOrderDto.bookId }, data: { stock: { decrement: 1 } } })
+      ])
 
     }
   }
@@ -92,8 +112,15 @@ export class OrdersService {
       where: { userId, },
       include: {
         bookData: true,
-        userData: true
-      }
+        userData: {
+          omit: {
+            password: true,
+            createAt: true,
+            updatedAt: true,
+            id: true
+          }
+        }
+      },
     });
 
     return order;

@@ -62,7 +62,7 @@ export class BooksService {
           take,
           where: {
             AND: [
-              // ...query,
+              ...query,
 
               {
                 price: {
