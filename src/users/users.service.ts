@@ -11,7 +11,11 @@ export class UsersService {
 
   async create(createUserDto: Prisma.UserCreateInput) {
     return this.dbService.user.create({
-      data: createUserDto
+      data: createUserDto,
+      omit: {
+        password: true,
+        id: true
+      }
     });
   }
 
