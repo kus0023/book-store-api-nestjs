@@ -10,12 +10,9 @@ export class CreateOrderDto {
     @IsOptional()
     status?: OrderStatus;
 
-    @IsArray()
-    @IsString({ each: true })
-    @IsNotEmpty({ each: true })
-    @ArrayMinSize(1)
-    @ArrayUnique()
-    bookIds: string[];
+    @IsString()
+    @IsNotEmpty()
+    bookId: string;
 
     @IsOptional()
     @IsString()
