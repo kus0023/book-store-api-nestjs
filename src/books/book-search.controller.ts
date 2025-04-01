@@ -1,7 +1,7 @@
 import { Controller, DefaultValuePipe, Get, ParseIntPipe, Query } from "@nestjs/common";
 import { BooksService } from "./books.service";
 
-@Controller("book/search")
+@Controller("books/search")
 export class BookSearchAndFilterController {
 
     constructor(private readonly booksService: BooksService) { }
