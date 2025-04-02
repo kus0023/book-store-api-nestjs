@@ -10,6 +10,8 @@ import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronJobsModule } from './cron-jobs/cron-jobs.module';
 
 @Module({
   imports: [
@@ -23,7 +25,9 @@ import { APP_GUARD } from '@nestjs/core';
     ThrottlerModule.forRoot([{
       ttl: 1000,
       limit: 10
-    }])
+    }]),
+    ScheduleModule.forRoot(),
+    CronJobsModule
   ],
   controllers: [AppController],
   providers: [
